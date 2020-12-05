@@ -3,8 +3,10 @@ from flask_restful import Api, Resource
 from flask_bcrypt import Bcrypt
 from database.db import initialise_db
 from resources.routes import initialise_routes
+from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
+app.config.from_envvar('ENV_FILE_LOCATION')
 
 initialise_db()
 
@@ -13,6 +15,10 @@ api = Api(app)
 initialise_routes(api)
 
 bcrypt = Bcrypt(app)
+
+# initialising JWT here
+jwt = JWTManager(app)
+
 
 
 

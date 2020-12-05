@@ -2,7 +2,7 @@ from mongoengine import StringField, EmailField, Document
 from flask_bcrypt import generate_password_hash, check_password_hash
 
 class User(Document):
-    name = StringField(required=True)
+    name = StringField()
     email = EmailField(required=True, unique = True)
     password = StringField(required=True,min_length=6)
     

@@ -1,11 +1,15 @@
 from flask import request, Response
 from flask_restful import Resource
+from flask_jwt_extended import create_access_token
 from database.models import User
 from mongoengine.errors import NotUniqueError, ValidationError, FieldDoesNotExist
+import datetime
+
 
 class Home(Resource):
     def get(self):
         return "welcome to the u_passwords api"
+
 
 class SignUp(Resource):
     def post(self):
@@ -28,3 +32,21 @@ class SignUp(Resource):
             return {"message": "body should be non empty, valid json object"}, 422
 
 
+class Login(Resource):
+
+    def post(self):
+        body = request.get_json()
+        if body is not None:
+            if "email" in body and "password" in body:
+                user = User.objects.get(email=body.get("email"))
+                authorized = user.check_password(body.get('password'))
+                if not authorized:
+                    return {'error': 'Email or password invalid'}, 401
+
+                expires = datetime.timedelta(days=7)
+                access_token = create_access_token(identity=str(user.id), expires_delta=expires)
+                return {'token': access_token}, 200
+            else:
+                return {"message": "should have 'email' and 'password' as key"},423
+        else:
+            return {"message": "body should be non empty, valid json object"}, 422
