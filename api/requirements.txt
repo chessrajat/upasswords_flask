@@ -3,3 +3,4 @@ flask_restful
 mongoengine
 flask-bcrypt
 flask_jwt_extended==3.25.0
+requests

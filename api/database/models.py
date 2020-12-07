@@ -12,4 +12,12 @@ class User(Document):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+class Passwords(Document):
+    domain = StringField(required=True)
+    username = StringField(required=True)
+    password = StringField(required=True)
+
     
+
+class Words(Document):
+    name = StringField(required=True)
