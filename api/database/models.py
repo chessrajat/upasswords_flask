@@ -1,4 +1,5 @@
 from mongoengine import StringField, EmailField, Document
+from mongoengine.errors import ValidationError
 from flask_bcrypt import generate_password_hash, check_password_hash
 
 class User(Document):
@@ -13,9 +14,17 @@ class User(Document):
         return check_password_hash(self.password, password)
 
 class Passwords(Document):
-    domain = StringField(required=True)
+    domain = StringField(required=True, unique = True)
     username = StringField(required=True)
     password = StringField(required=True)
+
+    def clean(self):
+        if "/" in self.domain:
+            msg = "Domain should be in format 'example.com'"
+            raise ValidationError(msg)
+        if len(self.username) < 1:
+            msg = "Username should not be empty"
+            raise ValidationError(msg)
 
     
 
