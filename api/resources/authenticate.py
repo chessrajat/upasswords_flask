@@ -1,6 +1,6 @@
 from flask import request, Response
 from flask_restful import Resource
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token,create_refresh_token, jwt_required, get_jwt_identity
 from database.models import User
 from mongoengine.errors import NotUniqueError, ValidationError, FieldDoesNotExist, DoesNotExist
 import datetime
@@ -57,3 +57,16 @@ class Login(Resource):
                 return {"message": "should have 'email' and 'password' as key"},423
         else:
             return {"message": "body should be non empty, valid json object"}, 422
+
+class RefreshToken(Resource):
+
+    @jwt_required
+    def get(self):
+        try:
+            user_id = get_jwt_identity()
+            user = User.objects.get(id=user_id)
+            expires = datetime.timedelta(days=7)
+            access_token = create_refresh_token(identity=str(user.id), expires_delta=expires)
+            return {'token': access_token}, 200
+        except Exception as e:
+            return {"message": "Something went wrong"}, 400

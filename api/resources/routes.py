@@ -7,7 +7,7 @@
  */
  '''
 
-from .authenticate import Home, SignUp, Login
+from .authenticate import Home, SignUp, Login, RefreshToken
 from .passwords import GeneratePassword, SavePassword
   
 def initialise_routes(api):
@@ -15,6 +15,7 @@ def initialise_routes(api):
 
     api.add_resource(SignUp, "/api/signup")
     api.add_resource(Login, "/api/login")
+    api.add_resource(RefreshToken, "/api/refresh_auth_token")
     
     api.add_resource(GeneratePassword, "/api/generate")
     
