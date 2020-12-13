@@ -6,7 +6,7 @@ services:
     ports: 
     - "5000:5000"
     volumes: 
-    - "D:\\coding\\python-flask\\u_passwords\\api:/app"
+    - ".\\api:/app"
     environment: 
       - ENV_FILE_LOCATION=secret.env
     links: 
