@@ -1,17 +1,27 @@
 from flask import request
 from flask_restful import Resource
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from mongoengine.errors import ValidationError, NotUniqueError, DoesNotExist
-from database.models import Passwords, Words
+from mongoengine.queryset.visitor import Q
+from database.models import Passwords, Words, User
 import json
 import random
+
  
 class SavePassword(Resource):
 
+    def get_current_user(self):
+        user_id = get_jwt_identity()
+        user = User.objects.get(id=user_id)
+        return user
+
+    @jwt_required
     def get(self):
         domain = request.args.get("domain")
         if domain is not None and len(domain)>0:
             try:
-                creds = Passwords.objects.get(domain=domain)
+                user = self.get_current_user()
+                creds = Passwords.objects.get(Q(domain=domain) & Q(user=user))
                 res = {
                     "domain":creds.domain,
                     "username":creds.username,
@@ -26,11 +36,14 @@ class SavePassword(Resource):
         else:
             return {"message": "Domain should not be empty"}
 
+    @jwt_required
     def post(self):
         body = request.get_json()
         if body is not None:
             try:
-                creds = Passwords(**body)
+                user = self.get_current_user()
+                creds = Passwords(**body, user=user)
+                print(creds.user.id, flush=True)
                 creds.validate()
                 creds.save()
                 return {"message": "Password saved successfully"}, 200
@@ -44,13 +57,13 @@ class SavePassword(Resource):
         else:
             return {"message": "body should be - non empty and a valid json object"}, 422
 
+    @jwt_required
     def put(self):
         body = request.get_json()
         if body is not None:
             try:
-                creds = Passwords.objects.get(domain=body.get("domain"))
-                if "username" or "password" not in body:
-                    return {"message":"Username or Password not specified for update"}
+                user = self.get_current_user()
+                creds = Passwords.objects.get(Q(domain=body.get("domain")) & Q(user=user))
                 creds.username = body.get("username")
                 creds.password = body.get("password")
                 creds.validate()
@@ -68,11 +81,14 @@ class SavePassword(Resource):
         else:
             return {"message": "body should be - non empty and a valid json object"}, 422
 
+
+    @jwt_required
     def delete(self):
         domain = request.args.get("domain")
         if domain is not None and len(domain)>0:
             try:
-                doc = Passwords.objects.get(domain=domain)
+                user = self.get_current_user()
+                doc = Passwords.objects.get(Q(domain=domain) & Q(user=user))
                 doc.delete()
                 return {"message":"Credentials deleted successfully"},200
             except DoesNotExist as dne:

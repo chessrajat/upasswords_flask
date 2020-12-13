@@ -7,6 +7,7 @@ from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
 app.config.from_envvar('ENV_FILE_LOCATION')
+app.config['PROPAGATE_EXCEPTIONS'] = True
 
 initialise_db()
 
@@ -20,6 +21,11 @@ bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
 
+
+# handling jwt errors
+@jwt.unauthorized_loader
+def without_jwt_token(msg):
+    return {"message":msg}
 
 
     

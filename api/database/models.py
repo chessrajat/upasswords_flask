@@ -1,4 +1,5 @@
-from mongoengine import StringField, EmailField, Document
+from enum import unique
+from mongoengine import StringField, EmailField, Document, ReferenceField
 from mongoengine.errors import ValidationError
 from flask_bcrypt import generate_password_hash, check_password_hash
 
@@ -14,7 +15,10 @@ class User(Document):
         return check_password_hash(self.password, password)
 
 class Passwords(Document):
-    domain = StringField(required=True, unique = True)
+    # for using unique_with -> you have to specify at the time of creation of collection
+    # if we change this parameter , drop the collection and start again
+    user = ReferenceField("User")
+    domain = StringField(required=True, unique_with="user")
     username = StringField(required=True)
     password = StringField(required=True)
 
