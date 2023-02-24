@@ -26,6 +26,7 @@ jwt = JWTManager(app)
 @jwt.unauthorized_loader
 def without_jwt_token(msg):
     return {"message":msg}
+    
 
 
     
