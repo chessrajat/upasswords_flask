@@ -11,7 +11,21 @@ services:
       - ENV_FILE_LOCATION=secret.env
     links: 
       - db
+    depends_on:
+      - db
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
 
+    ports:
+      - '3000:3000'
+
+    volumes:
+      - ./frontend:/app/frontend
+
+    depends_on:
+      - api
   db:
     build: ./db
     volumes: 

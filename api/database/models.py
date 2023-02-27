@@ -18,9 +18,14 @@ class Passwords(Document):
     # for using unique_with -> you have to specify at the time of creation of collection
     # if we change this parameter , drop the collection and start again
     user = ReferenceField("User")
-    domain = StringField(required=True, unique_with="user")
+    domain = StringField(required=True)
     username = StringField(required=True)
     password = StringField(required=True)
+    meta = {
+        'indexes': [
+            {'fields': ('domain', 'username'), 'unique': True}
+        ]
+    }
 
     def clean(self):
         if "/" in self.domain:

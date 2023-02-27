@@ -52,7 +52,7 @@ Now just, run
 - **Save** - [POST]
     - Input as json , Example
     - ```"domain":"example.com",
-        "email":"example@example.com",
+        "username":"example@example.com",
         "password":"somepa55word"```
 - **Retreive** - [GET]
     - Input in parameter

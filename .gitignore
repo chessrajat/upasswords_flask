@@ -2,3 +2,5 @@ venv
 .vscode
 secret.env
 __pycache__
+
+.dockerignore

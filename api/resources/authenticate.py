@@ -21,17 +21,17 @@ class SignUp(Resource):
                 user.hash_password()
                 user.save()
             except NotUniqueError as nue:
-                return {"message": "Email alreay Exists"}, 419
+                return {"message": "Email alreay Exists"}, 400
             except ValidationError as ve:
-                return {"message": str(ve.errors)}, 420
+                return {"message": str(ve.errors)}, 400
             except FieldDoesNotExist as fdne:
-                return {"message": fdne.args[0]}, 418
+                return {"message": fdne.args[0]}, 400
             except Exception as e:
                 return {"message": "something went wrong"}, 400
                
             return {"message":"Signup Successful"}, 200
         else:
-            return {"message": "body should be non empty, valid json object"}, 422
+            return {"message": "body should be non empty, valid json object"}, 400
 
 
 class Login(Resource):
@@ -54,9 +54,9 @@ class Login(Resource):
                 except Exception as e:
                     return {"message": "Something went wrong"}, 400
             else:
-                return {"message": "should have 'email' and 'password' as key"},423
+                return {"message": "should have 'email' and 'password' as key"},400
         else:
-            return {"message": "body should be non empty, valid json object"}, 422
+            return {"message": "body should be non empty, valid json object"}, 400
 
 class RefreshToken(Resource):
 
