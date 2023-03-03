@@ -18,12 +18,12 @@ class SavePassword(Resource):
     @jwt_required
     def get(self):
         domain = request.args.get("domain")
+        username = request.args.get("username")
         if domain is not None and len(domain) > 0:
             try:
                 user = self.get_current_user()
                 creds = Passwords.objects.filter(
-                    Q(domain=domain) & Q(user=user))
-                print(creds, flush=True)
+                    Q(domain=domain) & Q(user=user) & Q(username=username))
                 res = []
                 for cred in creds:
                     res.append({
@@ -54,13 +54,13 @@ class SavePassword(Resource):
                 return {"message": "Password saved successfully"}, 200
             except ValidationError as ve:
                 err_msg = str(ve.errors.get("__all__"))
-                return {"message": err_msg}, 420
+                return {"message": err_msg}, 400
             except NotUniqueError as nue:
-                return {"message": "Username on this domain already Exists"}, 419
+                return {"message": "Username on this domain already Exists"}, 400
             except Exception as e:
                 return {"message": "something went wrong"}, 400
         else:
-            return {"message": "body should be - non empty and a valid json object"}, 422
+            return {"message": "body should be - non empty and a valid json object"}, 400
 
     @jwt_required
     def put(self):
@@ -86,7 +86,7 @@ class SavePassword(Resource):
                 print(e, flush=True)
                 return {"message": "something went wrong"}, 400
         else:
-            return {"message": "body should be - non empty and a valid json object"}, 422
+            return {"message": "body should be - non empty and a valid json object"}, 400
 
     @jwt_required
     def delete(self):
@@ -95,7 +95,8 @@ class SavePassword(Resource):
         if domain is not None and username is not None:
             try:
                 user = self.get_current_user()
-                doc = Passwords.objects.get(Q(domain=domain) & Q(username=username) & Q(user=user))
+                doc = Passwords.objects.get(
+                    Q(domain=domain) & Q(username=username) & Q(user=user))
                 doc.delete()
                 return {"message": "Credentials deleted successfully"}, 200
             except DoesNotExist as dne:
@@ -122,6 +123,30 @@ class GeneratePassword(Resource):
         except Exception as e:
             return {"message": "Something went wrong try again"}, 500
         return {"password": password}, 200
+
+
+class ListPasswords(Resource):
+    def get_current_user(self):
+        user_id = get_jwt_identity()
+        user = User.objects.get(id=user_id)
+        return user
+
+    @jwt_required
+    def get(self):
+        page = request.args.get("page", 1)
+        try:
+            user = self.get_current_user()
+            creds = Passwords.objects.filter(user=user).limit(10)
+            res = []
+            for cred in creds:
+                res.append({
+                    "domain": cred.domain,
+                    "username": cred.username
+                })
+            return res, 200
+        except Exception as e:
+            print(e)
+            return {"message": "something went wrong try again"}, 400
 
 
 # adding all the words in db

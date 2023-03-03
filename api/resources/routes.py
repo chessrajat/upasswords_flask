@@ -2,21 +2,23 @@
 /*
  * @Author: Rajat
  * @Date: 2020-12-08 13:14:22 
- * @Last Modified by: Drag0
- * @Last Modified time: 2020-12-08 13:16:55
+ * @Last Modified by: Rajat
+ * @Last Modified time: 2023-03-03 08:49:32
  */
  '''
 
 from .authenticate import Home, SignUp, Login, RefreshToken
-from .passwords import GeneratePassword, SavePassword
-  
+from .passwords import GeneratePassword, ListPasswords, SavePassword
+
+
 def initialise_routes(api):
     api.add_resource(Home, "/")
 
     api.add_resource(SignUp, "/api/signup")
     api.add_resource(Login, "/api/login")
     api.add_resource(RefreshToken, "/api/refresh_auth_token")
-    
+
     api.add_resource(GeneratePassword, "/api/generate")
-    
+
     api.add_resource(SavePassword, "/api/password")
+    api.add_resource(ListPasswords, "/api/password/list")
