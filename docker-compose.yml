@@ -13,19 +13,19 @@ services:
       - db
     depends_on:
       - db
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
 
-    ports:
-      - '3000:3000'
+  #   ports:
+  #     - '3000:3000'
 
-    volumes:
-      - ./frontend:/app/frontend
+  #   volumes:
+  #     - ./frontend:/app/frontend
 
-    depends_on:
-      - api
+  #   depends_on:
+  #     - api
   db:
     build: ./db
     volumes: 

@@ -4,8 +4,10 @@ from flask_bcrypt import Bcrypt
 from database.db import initialise_db
 from resources.routes import initialise_routes
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 app.config.from_envvar('ENV_FILE_LOCATION')
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
