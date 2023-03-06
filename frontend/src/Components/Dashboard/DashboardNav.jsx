@@ -3,15 +3,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useRef } from "react";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import useOnClickOutside from "../../Utils/OnClickOutsideHook";
+import { logOut } from "../Auth/AuthSlice";
 
 const DashboardNav = () => {
   const [showSettings, setShowSettings] = useState(false);
+  const dispatch = useDispatch();
 
   const ref = useRef();
-
   useOnClickOutside(ref, () => setShowSettings(false));
+
+  const handleLogout = () => {
+    dispatch(logOut())
+  }
   return (
     <div className="flex bg-white shadow-lg p-2 justify-between">
       <Link to="/dashboard">
@@ -36,9 +42,13 @@ const DashboardNav = () => {
               !showSettings && "hidden"
             }`}
           >
-            <Link class="block px-4 py-2 text-sm font-semibold" tabindex="-1">
+            <button
+              onClick={handleLogout}
+              className="block px-4 py-2 text-sm font-semibold w-full text-left"
+              tabIndex="-1"
+            >
               Log out
-            </Link>
+            </button>
           </div>
         </div>
       </div>

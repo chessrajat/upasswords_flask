@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
-import { Link, Navigate, redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Home = () => {
-  
   return (
     <div
       className="relative flex items-center 
@@ -10,7 +9,7 @@ const Home = () => {
     >
       <video
         src="/assets/bg_video.mp4"
-        autoplay="{true}"
+        autoPlay="{true}"
         loop
         muted
         className="absolute w-auto 
@@ -26,7 +25,7 @@ const Home = () => {
           The only Password Manager you will ever need.
         </p>
         <Link
-          to="/login"
+          to="/dashboard"
           className="bg-white align-middle p-3 text-black font-bold border-2
          hover:bg-black hover:text-white"
         >

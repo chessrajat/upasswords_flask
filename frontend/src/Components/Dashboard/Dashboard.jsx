@@ -1,9 +1,10 @@
 import { faGear, faLock, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useEffect } from "react";
 import { useRef } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useListCredsQuery } from "../../API/PasswordsApi";
 import useOnClickOutside from "../../Utils/OnClickOutsideHook";
 import DashboardNav from "./DashboardNav";
 import GeneratedPasswordModal from "./GeneratedPasswordModal";
@@ -15,6 +16,32 @@ const Dashboard = () => {
   const [showGeneratedPasswordModal, setShowGeneratedPasswordModal] =
     useState(false);
 
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [filteredPasswords, setFilteredPasswords] = useState([]);
+
+  const {
+    data: passwordsList,
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  } = useListCredsQuery();
+
+  const handleSearch = (e) => {
+    setSearchKeyword(e.target.value);
+    let updatedList = [...passwordsList];
+    updatedList = updatedList.filter((item) => {
+      return (
+        item.domain.toLowerCase().indexOf(e.target.value.toLowerCase()) !== -1
+      );
+    });
+    setFilteredPasswords(updatedList);
+  };
+
+  useEffect(() => {
+    setFilteredPasswords(passwordsList);
+  }, [isSuccess, passwordsList]);
+
   return (
     <div>
       <DashboardNav />
@@ -25,12 +52,14 @@ const Dashboard = () => {
           <div className="flex items-center">
             <input
               type="text"
+              value={searchKeyword}
+              onChange={handleSearch}
               placeholder="Search"
               className="p-2 bg-transparent border-4 border-black rounded-tl-md rounded-bl-md focus:outline-none"
             />
             <FontAwesomeIcon
               icon={faSearch}
-              className="text-white bg-black p-4 cursor-pointer"
+              className="text-white bg-black p-4 cursor-pointer rounded-tr-md rounded-br-md"
             />
           </div>
         </div>
@@ -77,19 +106,24 @@ const Dashboard = () => {
               <div className="flex-grow border-t border-gray-300 m-5"></div>
             </div>
             <div className="px-3 my-3">
-              <PasswordCard />
-              <PasswordCard />
-              <PasswordCard />
-              <PasswordCard />
-              <PasswordCard />
-              <PasswordCard />
+              {isLoading
+                ? "Loading ..."
+                : filteredPasswords &&
+                  filteredPasswords.map((passwordinfo, i) => (
+                    <PasswordCard
+                      key={i}
+                      domain={passwordinfo.domain}
+                      username={passwordinfo.username}
+                    />
+                  ))}
             </div>
           </div>
-          <div className="flex justify-center mt-10">
+          {/* <div className="flex justify-center mt-10">
             <button className="p-2 bg-black text-white rounded-md w-96">
               View More
             </button>
-          </div>
+          </div> */}
+          <div className="h-12"></div>
         </div>
       </div>
       {showAddPasswordModal && (

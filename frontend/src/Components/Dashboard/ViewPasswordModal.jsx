@@ -1,18 +1,19 @@
 import { faClose, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
 import { useState } from "react";
-import { useGeneratePasswordQuery } from "../../API/apiSlice";
+import { toast } from "react-toastify";
+import { useGetCredsQuery } from "../../API/PasswordsApi";
 
-const GeneratedPasswordModal = ({ showModal }) => {
+const ViewPasswordModal = ({ showModal, domain, username }) => {
   const [isCopied, setIsCopied] = useState(false);
-
   const {
-    data: generatedPassword,
+    data: password,
     isLoading,
     isSuccess,
     isError,
     error,
-  } = useGeneratePasswordQuery();
+  } = useGetCredsQuery({ domain, username });
 
   return (
     <div className="absolute top-0 left-0 bg-slate-700 w-full h-full z-[100] bg-opacity-50">
@@ -25,23 +26,23 @@ const GeneratedPasswordModal = ({ showModal }) => {
           />
           {isLoading ? (
             "Loading..."
-          ) : (
+          ) : password.length > 0 ? (
             <div
               onClick={() => {
-                navigator.clipboard
-                  .writeText(generatedPassword.password)
-                  .then(() => {
-                    setIsCopied(true);
-                  });
+                navigator.clipboard.writeText(password[0].password).then(() => {
+                  setIsCopied(true);
+                });
               }}
               className="flex border p-2 items-center cursor-pointer"
             >
-              <p>{generatedPassword.password}</p>
+              <p>{password[0].password}</p>
               <FontAwesomeIcon
                 icon={faCopy}
                 className={`ml-5 p-2 ${isCopied && "text-green-600"}`}
               />
             </div>
+          ) : (
+            toast.error("No password found")
           )}
 
           {isCopied ? (
@@ -59,4 +60,4 @@ const GeneratedPasswordModal = ({ showModal }) => {
   );
 };
 
-export default GeneratedPasswordModal;
+export default ViewPasswordModal;

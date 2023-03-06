@@ -6,40 +6,37 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { useSaveCredsMutation } from "../../API/PasswordsApi";
-import useOnClickOutside from "../../Utils/OnClickOutsideHook";
+import { useUpdateCredsMutation } from "../../API/PasswordsApi";
 
-const NewPasswordModal = ({ showModal }) => {
-  const [domain, setDomain] = useState("");
-  const [username, setUsername] = useState("");
+const UpdatePasswordModal = ({ showModal, domain, username }) => {
+  const [domainInput, setDomainInput] = useState(domain);
+  const [usernameInput, setUsernameInput] = useState(username);
   const [password, setPassword] = useState("");
 
-  const [saveCreds, saveCredsState] = useSaveCredsMutation();
+  const [updateCreds, updateCredsStates] = useUpdateCredsMutation()
 
-  const handleAddCreds = async () => {
+  const handleUpdate = async () => {
     const creds = {
-      domain: domain,
-      username: username,
+      domain: domainInput,
+      username: usernameInput,
       password: password,
     };
     try {
-      const res = await saveCreds(creds).unwrap();
+      const res = await updateCreds(creds).unwrap();
       toast.success(res.message);
       showModal(false);
     } catch (err) {
       toast.error(err?.data?.message);
     }
-  };
+  }
 
-  const addPasswordRef = useRef();
-  useOnClickOutside(addPasswordRef, () => showModal(false));
   return (
     <div className="absolute top-0 left-0 bg-slate-700 w-full h-full z-[100] bg-opacity-50">
       <div className="flex justify-center items-center h-full w-full">
         <div className="bg-white p-10 border-2 rounded-lg">
-          <div className="flex mb-3">
+          <div className="flex mb-3 opacity-60">
             <FontAwesomeIcon
               icon={faGlobe}
               className="bg-black text-white p-4"
@@ -47,13 +44,14 @@ const NewPasswordModal = ({ showModal }) => {
             <input
               type="string"
               name="domain"
-              value={domain}
-              onChange={(e) => setDomain(e.target.value)}
+              value={domainInput}
+              onChange={(e) => setDomainInput(e.target.value)}
               placeholder="Domain (example.com)"
+              disabled
               className="p-2 border-2 border-black w-full focus:outline-0"
             />
           </div>
-          <div className="flex mb-3">
+          <div className="flex mb-3 opacity-60">
             <FontAwesomeIcon
               icon={faUser}
               className="bg-black text-white p-4"
@@ -61,9 +59,10 @@ const NewPasswordModal = ({ showModal }) => {
             <input
               type="string"
               name="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={usernameInput}
+              onChange={(e) => setUsernameInput(e.target.value)}
               placeholder="Username"
+              disabled
               className="p-2 border-2 border-black w-full focus:outline-0"
             />
           </div>
@@ -85,17 +84,14 @@ const NewPasswordModal = ({ showModal }) => {
             >
               <FontAwesomeIcon icon={faClose} />
             </button>
-            <button
-              onClick={handleAddCreds}
-              className="bg-black text-white p-2 w-full rounded-lg"
-            >
-              {saveCredsState.isLoading && (
+            <button onClick={handleUpdate} className="bg-black text-white p-2 w-full rounded-lg">
+            {updateCredsStates.isLoading && (
                 <FontAwesomeIcon
                   icon={faSpinner}
                   className="mr-2 animate-spin"
                 />
               )}
-              Add
+              Update
             </button>
           </div>
         </div>
@@ -104,4 +100,4 @@ const NewPasswordModal = ({ showModal }) => {
   );
 };
 
-export default NewPasswordModal;
+export default UpdatePasswordModal;
