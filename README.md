@@ -25,6 +25,14 @@ Now just, run
 - *Run this command ```mongorestore --db upasswords /app/backup/upasswords```*
 
 
+## UI
+---
+![home](assets/img/home.png)
+![register](assets/img/register.png)
+![dashboard](assets/img/dashboard.png)
+![add New](assets/img/add_new_password.png)
+![generated password](assets/img/generated_password.png)
+
 
 ## USAGE
 ### Signup
